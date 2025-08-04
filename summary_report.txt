@@ -1,0 +1,19 @@
+=== Product Summary Report ===
+
+📌 In-stock products > 100:
+- Laptop (1500)
+- Monitor (220)
+
+📦 Products per category:
+- Electronics: 3
+- Home: 1
+- Furniture: 1
+
+💰 Top 5 most expensive products:
+- Laptop (1500)
+- Monitor (220)
+- Chair (80)
+- Keyboard (50)
+- Coffee Mug (12)
+
+⚠️ Skipped 3 malformed row(s). See malformed_rows.log

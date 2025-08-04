@@ -1,0 +1,24 @@
+{
+  "name": "bal-int-project-challenge",
+  "version": "1.0.0",
+  "description": "repository for programming challenge",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AntonVNTR/bal-int-project-challenge.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AntonVNTR/bal-int-project-challenge/issues"
+  },
+  "homepage": "https://github.com/AntonVNTR/bal-int-project-challenge#readme",
+  "dependencies": {
+    "cli-table3": "^0.6.5",
+    "csv-parser": "^3.2.0"
+  }
+}

@@ -1,0 +1,8 @@
+#1 Reason: Invalid or missing field
+Row: {"ProductName":"InvalidRow1","Price":"","Category":"Furniture","InStock":"true"}
+
+#2 Reason: Invalid or missing field
+Row: {"ProductName":"Table","Price":"abc","Category":"Furniture","InStock":"false"}
+
+#3 Reason: Invalid or missing field
+Row: {"ProductName":"Pen","Price":"10","Category":"","InStock":"yes"}
