@@ -27,7 +27,6 @@
   ],
   "categoryCounts": {
     "Electronics": 3,
-    "Home": 1,
     "Furniture": 1
   },
   "topExpensive": [
@@ -54,12 +53,6 @@
       "Price": 50,
       "Category": "Electronics",
       "InStock": true
-    },
-    {
-      "ProductName": "Coffee Mug",
-      "Price": 12,
-      "Category": "Home",
-      "InStock": false
     }
   ]
 }

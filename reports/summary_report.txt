@@ -8,7 +8,6 @@ In-stock products > 0:
 
 Products per category:
 - Electronics: 3
-- Home: 1
 - Furniture: 1
 
 Top 5 Most Expensive Products:
@@ -16,4 +15,3 @@ Top 5 Most Expensive Products:
 - Monitor (220)
 - Chair (80)
 - Keyboard (50)
-- Coffee Mug (12)

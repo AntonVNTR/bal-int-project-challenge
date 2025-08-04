@@ -24,13 +24,13 @@ const argv = yargs
 
 // Initialize product array
 const products = [];
+let skippedCount = 0;
 
 // Read and parse CSV file
 fs.createReadStream('products.csv')
   .pipe(csv())
   .on('data', (row) => {
     try {
-      // Validate and transform row
       const price = parseFloat(row.Price);
       const inStock = row.InStock.toLowerCase() === 'true';
 
@@ -38,7 +38,6 @@ fs.createReadStream('products.csv')
         throw new Error('Invalid row format');
       }
 
-      // Push valid row into products array
       products.push({
         ProductName: row.ProductName,
         Price: price,
@@ -46,26 +45,33 @@ fs.createReadStream('products.csv')
         InStock: inStock,
       });
     } catch (error) {
-      console.warn('⚠️ Skipping malformed row:', row);
+      skippedCount++;
+      console.warn('⚠️ Skipping row...  ', skippedCount);
     }
   })
   .on('end', () => {
     console.log('✅ CSV successfully loaded.\n');
+
+    // Create reports directory if it doesn't exist
+    const reportsDir = path.join(__dirname, 'reports');
+    if (!fs.existsSync(reportsDir)) {
+      fs.mkdirSync(reportsDir);
+    }
 
     // Filter products based on in-stock and minimum price
     const filtered = products.filter(
       (p) => p.InStock && p.Price > argv.minPrice
     );
 
-    // Count number of products per category
+    // Count products per category (only filtered)
     const categoryCounts = {};
-    for (const product of products) {
+    for (const product of filtered) {
       categoryCounts[product.Category] =
         (categoryCounts[product.Category] || 0) + 1;
     }
 
-    // Sort products by price in descending order and take top-N
-    const topN = [...products]
+    // Top-N most expensive filtered products
+    const topN = [...filtered]
       .sort((a, b) => b.Price - a.Price)
       .slice(0, argv.top);
 
@@ -95,7 +101,7 @@ fs.createReadStream('products.csv')
     console.log(`\n💰 Top ${argv.top} most expensive products:\n`);
     console.log(topTable.toString());
 
-    // Create a plain-text summary
+    // Plain-text summary report
     const textReport = [
       `=== Product Summary Report ===\n`,
       `In-stock products > ${argv.minPrice}:`,
@@ -108,12 +114,11 @@ fs.createReadStream('products.csv')
       ...topN.map((p) => `- ${p.ProductName} (${p.Price})`),
     ].join('\n');
 
-    // Save to text file
-    fs.writeFileSync('summary_report.txt', textReport);
+    // Save reports to files
+    fs.writeFileSync(path.join(reportsDir, 'summary_report.txt'), textReport);
 
-    // Save to JSON file
     fs.writeFileSync(
-      'summary_report.json',
+      path.join(reportsDir, 'summary_report.json'),
       JSON.stringify({
         filteredProducts: filtered,
         categoryCounts,
@@ -121,27 +126,10 @@ fs.createReadStream('products.csv')
       }, null, 2)
     );
 
-    // Save to HTML file
-    const htmlContent = `
-      <html>
-      <head><title>Product Summary Report</title></head>
-      <body>
-        <h1>Product Summary Report</h1>
-        <h2>In-stock products > ${argv.minPrice}</h2>
-        <ul>${filtered.map((p) => `<li>${p.ProductName} (${p.Price})</li>`).join('')}</ul>
-        <h2>Products per category</h2>
-        <ul>${Object.entries(categoryCounts).map(([cat, count]) => `<li>${cat}: ${count}</li>`).join('')}</ul>
-        <h2>Top ${argv.top} Most Expensive Products</h2>
-        <ul>${topN.map((p) => `<li>${p.ProductName} (${p.Price})</li>`).join('')}</ul>
-      </body>
-      </html>
-    `;
-    fs.writeFileSync('summary_report.html', htmlContent);
-
-    console.log('\n📁 Reports saved:');
+    // Final log
+    console.log('\n Reports saved in /reports directory:');
     console.log('- summary_report.txt');
     console.log('- summary_report.json');
-    console.log('- summary_report.html');
   })
   .on('error', (err) => {
     console.error('❌ Error reading CSV file:', err.message);
