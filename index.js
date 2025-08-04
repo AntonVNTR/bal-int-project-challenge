@@ -1,121 +1,148 @@
+// Import necessary modules
 const fs = require('fs');
+const path = require('path');
 const csv = require('csv-parser');
-const Table = require('cli-table3');
+const Table = require('cli-table3'); // For displaying tables in console
+const yargs = require('yargs'); // For CLI argument parsing
 
+// Parse CLI arguments (--minPrice and --top)
+const argv = yargs
+  .option('minPrice', {
+    alias: 'm',
+    type: 'number',
+    default: 0,
+    describe: 'Minimum price filter for in-stock products',
+  })
+  .option('top', {
+    alias: 't',
+    type: 'number',
+    default: 5,
+    describe: 'Number of top expensive products to display',
+  })
+  .help()
+  .argv;
+
+// Initialize product array
 const products = [];
-const malformedRows = [];
 
-// Function to display console tables
-function printTable(title, data, headers) {
-  console.log(`\n📊 ${title}`);
-  const table = new Table({ head: headers });
-  data.forEach(row => table.push(row));
-  console.log(table.toString());
-}
-
-// Filter: In-stock & price > 100
-function filterExpensiveInStock(products) {
-  return products.filter(p => p.inStock && p.price > 100);
-}
-
-// Group by category
-function countByCategory(products) {
-  const categoryCount = {};
-  for (const p of products) {
-    categoryCount[p.category] = (categoryCount[p.category] || 0) + 1;
-  }
-  return categoryCount;
-}
-
-// Sort by price and take top 5
-function top5ByPrice(products) {
-  return [...products].sort((a, b) => b.price - a.price).slice(0, 5);
-}
-
-// Generate summary report (text)
-function generateTextReport(filtered, categoryCount, top5, malformedRows) {
-  let report = `=== Product Summary Report ===\n\n`;
-
-  report += `📌 In-stock products > 100:\n`;
-  filtered.forEach(p => {
-    report += `- ${p.productName} (${p.price})\n`;
-  });
-
-  report += `\n📦 Products per category:\n`;
-  for (const [category, count] of Object.entries(categoryCount)) {
-    report += `- ${category}: ${count}\n`;
-  }
-
-  report += `\n💰 Top 5 most expensive products:\n`;
-  top5.forEach(p => {
-    report += `- ${p.productName} (${p.price})\n`;
-  });
-
-  if (malformedRows.length > 0) {
-    report += `\n⚠️ Skipped ${malformedRows.length} malformed row(s). See malformed_rows.log\n`;
-  }
-
-  return report;
-}
-
-// Start processing CSV
+// Read and parse CSV file
 fs.createReadStream('products.csv')
   .pipe(csv())
   .on('data', (row) => {
     try {
-      const productName = row.ProductName?.trim();
+      // Validate and transform row
       const price = parseFloat(row.Price);
-      const category = row.Category?.trim();
-      const inStockRaw = row.InStock?.toLowerCase();
-      const inStock = inStockRaw === 'true';
+      const inStock = row.InStock.toLowerCase() === 'true';
 
-      // Validate fields
-      if (!productName || isNaN(price) || !category || (inStockRaw !== 'true' && inStockRaw !== 'false')) {
-        throw new Error('Invalid or missing field');
+      if (!row.ProductName || isNaN(price) || !row.Category) {
+        throw new Error('Invalid row format');
       }
 
-      products.push({ productName, price, category, inStock });
-    } catch (err) {
-      malformedRows.push({ row, reason: err.message });
+      // Push valid row into products array
+      products.push({
+        ProductName: row.ProductName,
+        Price: price,
+        Category: row.Category,
+        InStock: inStock,
+      });
+    } catch (error) {
+      console.warn('⚠️ Skipping malformed row:', row);
     }
   })
   .on('end', () => {
-    if (products.length === 0) {
-      console.error('❌ No valid products found. Check your CSV file.');
-      return;
+    console.log('✅ CSV successfully loaded.\n');
+
+    // Filter products based on in-stock and minimum price
+    const filtered = products.filter(
+      (p) => p.InStock && p.Price > argv.minPrice
+    );
+
+    // Count number of products per category
+    const categoryCounts = {};
+    for (const product of products) {
+      categoryCounts[product.Category] =
+        (categoryCounts[product.Category] || 0) + 1;
     }
 
-    console.log('✅ CSV loaded successfully');
+    // Sort products by price in descending order and take top-N
+    const topN = [...products]
+      .sort((a, b) => b.Price - a.Price)
+      .slice(0, argv.top);
 
-    const filtered = filterExpensiveInStock(products);
-    const categoryCount = countByCategory(products);
-    const top5 = top5ByPrice(products);
+    // Display filtered products in a table
+    const filteredTable = new Table({
+      head: ['Product Name', 'Price'],
+    });
+    filtered.forEach((p) => filteredTable.push([p.ProductName, p.Price]));
+    console.log(`📌 In-stock products > ${argv.minPrice}:\n`);
+    console.log(filteredTable.toString());
 
-    // Table: Filtered products
-    printTable('In-stock Products > 100', filtered.map(p => [p.productName, p.price]), ['Product', 'Price']);
+    // Display category counts
+    const categoryTable = new Table({
+      head: ['Category', 'Count'],
+    });
+    Object.entries(categoryCounts).forEach(([cat, count]) =>
+      categoryTable.push([cat, count])
+    );
+    console.log('\n📦 Products per category:\n');
+    console.log(categoryTable.toString());
 
-    // Table: Category counts
-    printTable('Product Count per Category', Object.entries(categoryCount), ['Category', 'Count']);
+    // Display top-N most expensive products
+    const topTable = new Table({
+      head: ['Product Name', 'Price'],
+    });
+    topN.forEach((p) => topTable.push([p.ProductName, p.Price]));
+    console.log(`\n💰 Top ${argv.top} most expensive products:\n`);
+    console.log(topTable.toString());
 
-    // Table: Top 5 expensive
-    printTable('Top 5 Most Expensive Products', top5.map(p => [p.productName, p.price]), ['Product', 'Price']);
+    // Create a plain-text summary
+    const textReport = [
+      `=== Product Summary Report ===\n`,
+      `In-stock products > ${argv.minPrice}:`,
+      ...filtered.map((p) => `- ${p.ProductName} (${p.Price})`),
+      '',
+      'Products per category:',
+      ...Object.entries(categoryCounts).map(([cat, count]) => `- ${cat}: ${count}`),
+      '',
+      `Top ${argv.top} Most Expensive Products:`,
+      ...topN.map((p) => `- ${p.ProductName} (${p.Price})`),
+    ].join('\n');
 
-    // Generate and save summary report
-    const report = generateTextReport(filtered, categoryCount, top5, malformedRows);
-    console.log('\n📝 Summary Report:\n');
-    console.log(report);
-    fs.writeFileSync('summary_report.txt', report);
-    console.log('📁 Report saved to summary_report.txt');
+    // Save to text file
+    fs.writeFileSync('summary_report.txt', textReport);
 
-    // Write malformed rows if any
-    if (malformedRows.length > 0) {
-      const bad = malformedRows.map((item, i) => {
-        return `#${i + 1} Reason: ${item.reason}\nRow: ${JSON.stringify(item.row)}\n`;
-      }).join('\n');
-      fs.writeFileSync('malformed_rows.log', bad);
-      console.warn(`⚠️ ${malformedRows.length} malformed row(s) skipped. See malformed_rows.log`);
-    }
+    // Save to JSON file
+    fs.writeFileSync(
+      'summary_report.json',
+      JSON.stringify({
+        filteredProducts: filtered,
+        categoryCounts,
+        topExpensive: topN,
+      }, null, 2)
+    );
+
+    // Save to HTML file
+    const htmlContent = `
+      <html>
+      <head><title>Product Summary Report</title></head>
+      <body>
+        <h1>Product Summary Report</h1>
+        <h2>In-stock products > ${argv.minPrice}</h2>
+        <ul>${filtered.map((p) => `<li>${p.ProductName} (${p.Price})</li>`).join('')}</ul>
+        <h2>Products per category</h2>
+        <ul>${Object.entries(categoryCounts).map(([cat, count]) => `<li>${cat}: ${count}</li>`).join('')}</ul>
+        <h2>Top ${argv.top} Most Expensive Products</h2>
+        <ul>${topN.map((p) => `<li>${p.ProductName} (${p.Price})</li>`).join('')}</ul>
+      </body>
+      </html>
+    `;
+    fs.writeFileSync('summary_report.html', htmlContent);
+
+    console.log('\n📁 Reports saved:');
+    console.log('- summary_report.txt');
+    console.log('- summary_report.json');
+    console.log('- summary_report.html');
   })
   .on('error', (err) => {
-    console.error(`❌ Failed to read CSV: ${err.message}`);
+    console.error('❌ Error reading CSV file:', err.message);
   });

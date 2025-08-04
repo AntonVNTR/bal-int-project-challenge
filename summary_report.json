@@ -1,0 +1,65 @@
+{
+  "filteredProducts": [
+    {
+      "ProductName": "Laptop",
+      "Price": 1500,
+      "Category": "Electronics",
+      "InStock": true
+    },
+    {
+      "ProductName": "Keyboard",
+      "Price": 50,
+      "Category": "Electronics",
+      "InStock": true
+    },
+    {
+      "ProductName": "Chair",
+      "Price": 80,
+      "Category": "Furniture",
+      "InStock": true
+    },
+    {
+      "ProductName": "Monitor",
+      "Price": 220,
+      "Category": "Electronics",
+      "InStock": true
+    }
+  ],
+  "categoryCounts": {
+    "Electronics": 3,
+    "Home": 1,
+    "Furniture": 1
+  },
+  "topExpensive": [
+    {
+      "ProductName": "Laptop",
+      "Price": 1500,
+      "Category": "Electronics",
+      "InStock": true
+    },
+    {
+      "ProductName": "Monitor",
+      "Price": 220,
+      "Category": "Electronics",
+      "InStock": true
+    },
+    {
+      "ProductName": "Chair",
+      "Price": 80,
+      "Category": "Furniture",
+      "InStock": true
+    },
+    {
+      "ProductName": "Keyboard",
+      "Price": 50,
+      "Category": "Electronics",
+      "InStock": true
+    },
+    {
+      "ProductName": "Coffee Mug",
+      "Price": 12,
+      "Category": "Home",
+      "InStock": false
+    }
+  ]
+}
