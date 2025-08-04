@@ -1,9 +1,7 @@
 # bal-int-project-challenge
-
-Product Report
 ==================
 
-A Node.js CLI application that parses a CSV file of product data, applies filtering and grouping logic, sorts products by price, and generates summary reports in multiple formats: console output, plain text, HTML, and JSON.
+A Node.js CLI application that parses a CSV file of product data, applies filtering and grouping logic, sorts products by price, and generates summary reports in multiple formats: console output, plain text and JSON.
 
 ------------------------
 FEATURES
@@ -16,7 +14,6 @@ FEATURES
   * Console output (with table)
   * Plain text file (summary_report.txt)
   * JSON file (summary_report.json)
-  * HTML file (summary_report.html)
 - Includes unit tests using Jest
 - Handles errors from missing files or malformed data
 - Supports CLI arguments for customization
@@ -66,7 +63,7 @@ GETTING STARTED
    npm install
 
 3. Run the project:
-   node index.js     				  # default
+   node index.js     				                  # default
    node index.js --minPrice 100 --top 5		  # with CLI arguments
 
 4. Run unit tests:
@@ -128,7 +125,6 @@ Top 5 most expensive products:
 Reports saved:
 - summary_report.txt
 - summary_report.json
-- summary_report.html
 
 ------------------------
 TESTING
