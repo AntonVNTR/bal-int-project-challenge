@@ -46,11 +46,11 @@ fs.createReadStream('products.csv')
       });
     } catch (error) {
       skippedCount++;
-      console.warn('⚠️ Skipping row...  ', skippedCount);
+      console.warn(skippedCount, ' Skipped row...  ');
     }
   })
   .on('end', () => {
-    console.log('✅ CSV successfully loaded.\n');
+    console.log('√ CSV successfully loaded.\n');
 
     // Create reports directory if it doesn't exist
     const reportsDir = path.join(__dirname, 'reports');
@@ -80,7 +80,7 @@ fs.createReadStream('products.csv')
       head: ['Product Name', 'Price'],
     });
     filtered.forEach((p) => filteredTable.push([p.ProductName, p.Price]));
-    console.log(`📌 In-stock products > ${argv.minPrice}:\n`);
+    console.log(`In-stock products > ${argv.minPrice}:\n`);
     console.log(filteredTable.toString());
 
     // Display category counts
@@ -90,7 +90,7 @@ fs.createReadStream('products.csv')
     Object.entries(categoryCounts).forEach(([cat, count]) =>
       categoryTable.push([cat, count])
     );
-    console.log('\n📦 Products per category:\n');
+    console.log('\n Products per category:\n');
     console.log(categoryTable.toString());
 
     // Display top-N most expensive products
@@ -98,7 +98,7 @@ fs.createReadStream('products.csv')
       head: ['Product Name', 'Price'],
     });
     topN.forEach((p) => topTable.push([p.ProductName, p.Price]));
-    console.log(`\n💰 Top ${argv.top} most expensive products:\n`);
+    console.log(`\n Top ${argv.top} most expensive products:\n`);
     console.log(topTable.toString());
 
     // Plain-text summary report
@@ -127,10 +127,10 @@ fs.createReadStream('products.csv')
     );
 
     // Final log
-    console.log('\n Reports saved in /reports directory:');
+    console.log('\nReports saved in /reports directory:');
     console.log('- summary_report.txt');
     console.log('- summary_report.json');
   })
   .on('error', (err) => {
-    console.error('❌ Error reading CSV file:', err.message);
+    console.error('ERROR READING CSV FILE:', err.message);
   });

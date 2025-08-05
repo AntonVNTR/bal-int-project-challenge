@@ -11,7 +11,7 @@
     "url": "git+https://github.com/AntonVNTR/bal-int-project-challenge.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Anton V",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/AntonVNTR/bal-int-project-challenge/issues"
@@ -22,6 +22,6 @@
     "csv-parser": "^3.2.0"
   },
   "devDependencies": {
-    "jest": "^30.0.5"
+    "jest": "^30.0.4"
   }
 }

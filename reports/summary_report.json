@@ -7,18 +7,6 @@
       "InStock": true
     },
     {
-      "ProductName": "Keyboard",
-      "Price": 50,
-      "Category": "Electronics",
-      "InStock": true
-    },
-    {
-      "ProductName": "Chair",
-      "Price": 80,
-      "Category": "Furniture",
-      "InStock": true
-    },
-    {
       "ProductName": "Monitor",
       "Price": 220,
       "Category": "Electronics",
@@ -26,8 +14,7 @@
     }
   ],
   "categoryCounts": {
-    "Electronics": 3,
-    "Furniture": 1
+    "Electronics": 2
   },
   "topExpensive": [
     {
@@ -39,18 +26,6 @@
     {
       "ProductName": "Monitor",
       "Price": 220,
-      "Category": "Electronics",
-      "InStock": true
-    },
-    {
-      "ProductName": "Chair",
-      "Price": 80,
-      "Category": "Furniture",
-      "InStock": true
-    },
-    {
-      "ProductName": "Keyboard",
-      "Price": 50,
       "Category": "Electronics",
       "InStock": true
     }

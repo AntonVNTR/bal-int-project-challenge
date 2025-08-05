@@ -1,17 +1,12 @@
 === Product Summary Report ===
 
-In-stock products > 0:
+In-stock products > 100:
 - Laptop (1500)
-- Keyboard (50)
-- Chair (80)
 - Monitor (220)
 
 Products per category:
-- Electronics: 3
-- Furniture: 1
+- Electronics: 2
 
 Top 5 Most Expensive Products:
 - Laptop (1500)
 - Monitor (220)
-- Chair (80)
-- Keyboard (50)
