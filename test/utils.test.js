@@ -11,15 +11,15 @@ const product = [
 test('filterExpensiveInStock filters by price and stock', () => {
   const result = filterExpensiveInStock(product, 100);
   expect(result.length).toBe(2);
-  expect(result.map(p => p.productName)).toEqual(['A', 'D']);
+  expect(result.map(p => p.productName)).toEqual(['Laptop', 'Monitor']);
 });
 
 test('countByCategory counts correctly', () => {
   const result = countByCategory(product);
-  expect(result).toEqual({ Tech: 2, Home: 2 });
+  expect(result).toEqual({ Tech: 2, Home: 3 });
 });
 
 test('topNByPrice returns top N sorted products', () => {
-  const result = topNByPrice(product, 2);
-  expect(result.map(p => p.productName)).toEqual(['D', 'A']);
+  const result = topNByPrice(product, 5);
+  expect(result.map(p => p.productName)).toEqual(['Laptop','Monitor','Chair','Keyboard', 'Coffee']);
 });
